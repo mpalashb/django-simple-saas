@@ -14,17 +14,17 @@ Admin can add and modify pricing plans using Stripe product price IDs, as well a
 
 ### Table of Contents
 
-- 1. Proposal Checker & Generator
-- 2. Subscription & Payment
-- 3. Admin Panel
+- Proposal Checker & Generator
+- Subscription & Payment
+- Admin Panel
 
-## 1. Proposal
+## Proposal
 
-## 2. Subscription & Payment
+## Subscription & Payment
 
-## 3. Admin Panel
+## Admin Panel
 
-# You might be check some screenshot here to achive some ideas
+# You can check out some screenshots here to get some ideas about our application
 
 ![Screenshot](screenshots/1-django-saas-home.png)
 ![Screenshot](screenshots/2-django-saas-admin-plan.png)
