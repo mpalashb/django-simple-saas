@@ -20,9 +20,15 @@ Admin can add and modify pricing plans using Stripe product price IDs, as well a
 
 ## Proposal
 
+To generate a new proposal, the user has to click `Generate Cover Letter`. If the user has enough credits to generate, they can then generate and copy the success results. Similarly, when checking a proposal, the user should click on `Check cover letter` to view the score and receive a suggested proposal
+
 ## Subscription & Payment
 
+To subscribe to a plan. Users need to create a profile first. They can then proceed to checkout using Stripe!
+
 ## Admin Panel
+
+Admin can access admin panel to create, edit, or delete a pricing plan. They can copy the stripe Product price IDs to paste them into the plan model section and add credits and features, which will be displayed to users
 
 ### You can check out some screenshots here to get some ideas about our application
 
