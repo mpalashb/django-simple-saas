@@ -24,7 +24,7 @@ Admin can add and modify pricing plans using Stripe product price IDs, as well a
 
 ## Admin Panel
 
-# You can check out some screenshots here to get some ideas about our application
+### You can check out some screenshots here to get some ideas about our application
 
 ![Screenshot](screenshots/1-django-saas-home.png)
 ![Screenshot](screenshots/2-django-saas-admin-plan.png)
