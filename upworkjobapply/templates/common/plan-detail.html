@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+<!--  -->
+{% load static %}
+<!--  -->
+
+{% block title %} {{plan.name}} | {{plan.plan_type}} {% endblock title %}
+
+<!--  -->
+
+{% block head_script %}
+
+<script src="https://js.stripe.com/v3/"></script>
+
+{% endblock head_script %}
+
+<!--  -->
+
+{% block body %}
+
+<div class="container">
+  <div class="plan-detail-are p-5">
+    <h2 class="text-center text-primary py-4">This is plan detail page</h2>
+
+    <div class="row justify-content-center mt-5">
+      <div class="col-md-8">
+        <div class="card">
+          <div class="card-header bg-primary text-white">
+            <h3 class="card-title">{{ plan.name }}</h3>
+          </div>
+          <div class="card-body">
+            <h4 class="card-subtitle mb-3">{{ plan.plan_type }}</h4>
+            <h1 class="display-1">
+              ${{ plan.plan_cost }}<span class="h6">
+                {% if plan.plan_type == 'monthly' %} mo/ {% else %} yr/
+                <!--  -->
+                {% endif %}</span
+              >
+            </h1>
+
+            {% if plan.plan_features %}
+
+            <ul class="list-unstyled mt-4">
+              {% for pl in plan_features %}
+              <li><i class="bi bi-check text-primary"></i>{{ pl }}</li>
+              {% endfor %}
+            </ul>
+            {% endif %}
+            <div class="mt-5 text-center">
+              <!-- <form
+                action="{% url 'general:plan-checkout-session' plan.id %}"
+                method="post"
+              > -->
+              {% csrf_token %}
+
+              <!--  -->
+              {% if plan.stripe_product_id %} {% if request.user.profile %}
+              <button
+                type="button"
+                class="btn btn-lg btn-primary"
+                id="checkoutBtn"
+              >
+                Subscribe Now
+              </button>
+              {% else %}
+              <!--  -->
+              <div class="alert alert-warning" role="alert">
+                You must need to create a profile first to Subscribe!
+                <a href="{% url 'users:profile-create' %}">Create Profile</a>
+              </div>
+              {% endif %}
+              <!--  -->
+
+              {% else %}
+
+              <h4 class="bg-danger">
+                You must setup the stripe product price id
+              </h4>
+              <h1>500 internal!</h1>
+
+              {% endif %}
+              <!-- </form> -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock body %}
+
+<!--  -->
+{% block custom_script %}
+
+<script>
+  var stripe = Stripe("{{ STRIPE_PUBLIC_KEY }}");
+
+  const checkoutButton = document.getElementById("checkoutBtn");
+  const csfrTKN = document.querySelector('[name="csrfmiddlewaretoken"]').value;
+
+  checkoutButton.addEventListener("click", () => {
+    console.log("Clicked Payment");
+    console.log("{{ id }}");
+
+    fetch("{% url 'general:plan-checkout-session' plan.id %}", {
+      method: "POST",
+      headers: {
+        "X-CSRFToken": csfrTKN,
+      },
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((session) => {
+        return stripe.redirectToCheckout({
+          // Make the id field from the Checkout Session creation API response
+          // available to this file, so you can provide it as argument here
+          // instead of the {{CHECKOUT_SESSION_ID}} placeholder.
+          sessionId: session.id,
+        });
+      })
+      .then((result) => {
+        if (result.error) {
+          alert(result.error.MESSAGE);
+        }
+        return console.log(result);
+      })
+      .catch((err) => console.log(err));
+  });
+</script>
+
+<script src="{% static 'js/stripe_checkout.js' %}"></script>
+
+{% endblock custom_script %}

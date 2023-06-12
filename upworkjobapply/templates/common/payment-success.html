@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+<!--  -->
+{% load static %}
+<!--  -->
+
+{% block title %} Success {% endblock title %}
+<!--  -->
+
+{% block body %}
+<div class="container d-flex flex-column justify-content-center py-5">
+  <h2 class="text-center text-success">Payment Success!</h2>
+  <a
+    href="{% url 'users:profile-dash' %}"
+    class="btn btn-success text-center w-25 m-auto mt-3"
+  >
+    Go To Dashboard
+  </a>
+</div>
+
+{% endblock body %}
+<!--  -->

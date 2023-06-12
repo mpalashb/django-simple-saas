@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+<!--  -->
+{% load static %}
+<!--  -->
+
+{% block title %} Check Cover Letter {% endblock title %}
+<!--  -->
+
+{% block custom_style %} {% endblock custom_style %}
+<!--  -->
+{% block body %}
+
+<div class="container mt-5">
+  {% if history %}
+  <h1>Proposal History</h1>
+  <a href="{% url 'users:proposal-del' %}" class="btn btn-danger">Clear All</a>
+
+  <ul class="list-group mt-4">
+    {% for hs in history %}
+    <li class="list-group-item">
+      <div class="row">
+        <div class="col-md-2">Username:</div>
+        <div class="col-md-10">{{hs.user.user}}</div>
+      </div>
+      <div class="row">
+        <div class="col-md-2">Date:</div>
+        <div class="col-md-10">{{hs.created_at}}</div>
+      </div>
+      <div class="row">
+        <div class="col-md-2">Proposal</div>
+        <div class="col-md-10">{{hs.cover_leter}}</div>
+      </div>
+    </li>
+
+    {% endfor %}
+  </ul>
+
+  {% else %}
+  <div class="alert alert-warning text-center w-50 m-auto">
+    You have no proposal history in your profile!
+  </div>
+
+  {% endif %}
+</div>
+
+{% endblock body %}
+<!--  -->

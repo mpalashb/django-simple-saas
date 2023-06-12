@@ -1,0 +1,329 @@
+{% extends 'base.html' %}
+<!--  -->
+{% load static %}
+<!--  -->
+
+{% block title %} Check Score {% endblock title %}
+<!--  -->
+
+{% block custom_style %}
+
+<style>
+  .score-circle {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    font-size: 24px;
+    font-weight: bold;
+  }
+  .score-circle.bad {
+    background-color: #dc3545;
+    color: #fff;
+  }
+  .score-circle.moderate {
+    background-color: #ffc107;
+    color: #000;
+  }
+  .score-circle.good {
+    background-color: #28a745;
+    color: #fff;
+  }
+</style>
+
+{% endblock custom_style %}
+<!--  -->
+{% block body %}
+<div class="container d-flex justify-content-center w-75 m-auto" id="scoreArea">
+  <div class="mt-3">
+    <h5>Score: <span class="badge bg-success">7.5%</span></h5>
+    <div class="score-circle">7.5%</div>
+  </div>
+</div>
+
+<div class="container mt-5">
+  <div
+    class="alert text-center w-50 m-auto"
+    id="customAlert"
+    role="alert"
+    style="display: none"
+  ></div>
+
+  <h6
+    class="text-center my-3 w-50 m-auto p-2 text-light"
+    style="background-color: #a1a1a1"
+  >
+    You required 10 credit to check each!
+    <a href="{% url 'users:check-proposal-history' %}" class="ms-4 text-white"
+      >History</a
+    >
+  </h6>
+  <div class="w-50 m-auto d-flex justify-content-between align-content-center">
+    <h1 class="text-center my-3">Check Your Proposal Score!</h1>
+    <p class="ms-4 fw-bold m-auto" id="credit-left-user" style="color: #317e5f">
+      Credit Left: {{request.user.profile.credit}}
+    </p>
+  </div>
+  <div class="pt-2 pb-1 w-75 m-auto d-none" id="suggestHeader">
+    <hr />
+    <h6 class="text-center my-3 font-bold">Proposal Suggestion!</h6>
+  </div>
+
+  <div class="inside-container bg-light w-75 m-auto">
+    <div
+      class="my-4 d-none justify-content-between"
+      id="suggestArea"
+      style="background-color: #ebdecc"
+    >
+      <p class="lead p-4" style="font-weight: 600">
+        This is testing suggested cover letter This is testing suggested cover
+        letter This is testing suggested cover letter This is testing suggested
+        cover letter This is testing suggested cover letter
+      </p>
+      <button
+        type="button"
+        class="btn btn-outline-primary btn-auto"
+        id="suggestCopyBtn"
+        style="height: fit-content"
+        onclick="copyToCl()"
+      >
+        Copy
+      </button>
+    </div>
+
+    <div class="mb-3">
+      <label
+        for="coverDescription"
+        class="form-label"
+        style="color: #28a745; font-weight: bold"
+        >Your Cover Letter</label
+      >
+      <textarea
+        class="form-control"
+        id="coverDesc"
+        rows="8"
+        name="cdesc"
+        required
+      ></textarea>
+    </div>
+    <div class="mb-3">
+      <label
+        for="jobDescription"
+        class="form-label"
+        style="color: #2c28a7; font-weight: 500"
+        >Job Description</label
+      >
+      <textarea
+        class="form-control"
+        id="jobDesc"
+        rows="8"
+        name="jdesc"
+        required
+      ></textarea>
+    </div>
+    <button type="button" class="btn btn-primary" id="checkResultBtn">
+      Check Results
+    </button>
+  </div>
+</div>
+
+{% endblock body %}
+<!--  -->
+
+{% block custom_script %}
+<script>
+  const cover_desc = document.getElementById("coverDesc");
+  const job_desc = document.getElementById("jobDesc");
+  const btnResult = document.getElementById("checkResultBtn");
+  const customAlert = document.getElementById("customAlert");
+  const scoreArea = document.getElementById("scoreArea");
+  scoreArea.classList.replace("d-flex", "d-none");
+  const suggestArea = document.getElementById("suggestArea");
+  const suggestCopyBtn = document.getElementById("suggestCopyBtn");
+  const suggestHeader = document.getElementById("suggestHeader");
+  const creditLeft = document.getElementById("credit-left-user");
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const checkResult = () => {
+      let spanLoader = document.createElement("span");
+      spanLoader.setAttribute("role", "status");
+      spanLoader.setAttribute("aria-hidden", "true");
+      spanLoader.classList.add("spinner-border", "spinner-border-sm");
+
+      // clearing the text first
+      btnResult.innerText = "";
+      btnResult.disabled = true;
+      btnResult.appendChild(spanLoader);
+      // to get the loading... text after the loader
+      btnResult.appendChild(document.createTextNode(" Loading..."));
+
+      fetch("/api/v2/check-score", {
+        method: "post",
+        headers: {
+          "X-CSRFToken": csrftoken,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          cover_desc: cover_desc.value,
+          job_desc: job_desc.value,
+        }),
+      })
+        .then((load) => {
+          btnResult.innerText = "Check Results";
+          btnResult.disabled = false;
+          return { data: load.json(), status: load.status };
+        })
+        .then((res) => {
+          if (res.status === 200) {
+            res.data.then((res_) => {
+              let result = null;
+              let rating = null;
+              let suggest_cover = null;
+
+              if (res_.res) {
+                result = res_.res.result;
+                rating = res_.res.rating;
+                suggest_cover = res_.res.suggest_cover;
+              }
+              if (res_.res.msg) {
+                const apiCErr = res_.res.msg;
+                console.log(apiCErr);
+                customAlert.style.display = "block";
+                customAlert.classList.add("alert-warning");
+                customAlert.innerHTML = apiCErr;
+
+                setTimeout(() => {
+                  customAlert.style.display = "none";
+                }, 5000);
+              }
+              const status_msg = res_.status_msg;
+              const credit_error = res_.credit_error;
+
+              if (status_msg || credit_error) {
+                const s_or_c_err = status_msg ? status_msg : credit_error;
+
+                customAlert.style.display = "block";
+                customAlert.classList.add("alert-warning");
+                customAlert.innerHTML = s_or_c_err;
+
+                setTimeout(() => {
+                  customAlert.style.display = "none";
+                }, 5000);
+              }
+
+              //
+              //
+              //
+              const credit_left_ = res_.credit;
+
+              if (credit_left_) {
+                creditLeft.innerText = credit_left_;
+              }
+
+              if (result && rating) {
+                scoreArea.classList.replace("d-none", "d-flex");
+                scoreArea.children[0].children[0].children[0].innerHTML = `${rating}%`;
+                // scoreArea.children[0].children[1].classList.forEach((c) => {
+                //   console.log(c);
+                //   scoreArea.children[0].children[1].classList.remove(c);
+                // });
+
+                scoreArea.children[0].children[1].classList.remove(
+                  "good",
+                  "bad",
+                  "moderate"
+                );
+
+                scoreArea.children[0].children[1].classList.add(result);
+                scoreArea.children[0].children[1].innerHTML = `${rating}%`;
+              }
+
+              if (suggest_cover) {
+                suggestArea.classList.replace("d-none", "d-flex");
+                suggestHeader.children[1].classList.remove("d-none");
+                suggestArea.children[0].innerHTML = suggest_cover;
+                // console.log("Suggested Cover Letter ", suggest_cover);
+              }
+
+              //
+              //
+              //
+            });
+          } else if (res.status === 400) {
+            res.data.then((err_res) => {
+              console.log(err_res);
+
+              const cover_desc_err = err_res.cover_desc;
+              const job_desc_err = err_res.job_desc;
+              let csAlert = [];
+
+              if (cover_desc_err) {
+                csAlert.push(`Cover Leter: ${cover_desc_err.toString()}`);
+              }
+              if (job_desc_err) {
+                csAlert.push(`Job Description: ${job_desc_err.toString()}`);
+              }
+              if (err_res.err) {
+                csAlert.push(`Error: ${err_res.err}`);
+              }
+
+              csAlert = csAlert.toString();
+              customAlert.style.display = "block";
+              customAlert.classList.add("alert-warning");
+              customAlert.innerHTML = csAlert;
+
+              setTimeout(() => {
+                customAlert.style.display = "none";
+              }, 5000);
+            });
+          } else {
+            btnResult.innerText = "Check Results";
+            btnResult.disabled = false;
+            console.log("else console");
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+          btnResult.innerText = "Check Results";
+          btnResult.disabled = false;
+        });
+    };
+
+    btnResult.addEventListener("click", (e) => {
+      e.preventDefault();
+      checkResult();
+    });
+  });
+
+  const copyToCl = () => {
+    navigator.clipboard
+      .writeText(suggestArea.children[0].textContent)
+      .then(() => {
+        suggestCopyBtn.innerText = "Copied!";
+        suggestCopyBtn.style.color = "#f7eeee";
+        suggestCopyBtn.style.fontWeight = "500";
+        suggestCopyBtn.style.backgroundColor = "black";
+      });
+  };
+
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== "") {
+      const cookies = document.cookie.split(";");
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        // Does this cookie string begin with the name we want?
+        if (cookie.substring(0, name.length + 1) === name + "=") {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+  const csrftoken = getCookie("csrftoken");
+</script>
+
+{% endblock custom_script %}

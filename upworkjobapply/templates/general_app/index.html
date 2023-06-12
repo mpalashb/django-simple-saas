@@ -1,0 +1,41 @@
+<!--  -->
+{% extends 'base.html' %} {% load static %}
+<!--  -->
+
+{% block title %}General{% endblock title %}
+<!--  -->
+
+{% block custom_style %}
+<link rel="stylesheet" href="{% static 'css/general_app/style.css' %}" />
+<!--  -->
+
+{% endblock custom_style %}
+
+<!--  -->
+
+<!--  -->
+
+{% block body %}
+
+<section class="hero-section bg-dark text-light py-5">
+  <div class="container">
+    <h1 class="display-4 fw-bold">Save time to apply job!</h1>
+    <p class="lead">
+      Generate your job proposals and check your proposal scores with.
+    </p>
+    <a href="{% url 'users:gen-cover' %}" class="btn btn-primary btn-lg"
+      >Get Started</a
+    >
+  </div>
+</section>
+
+<section class="features-section py-5">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-4"></div>
+      <div class="col-md-4"></div>
+    </div>
+  </div>
+</section>
+
+{% endblock body %}

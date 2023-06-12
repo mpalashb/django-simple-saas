@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+<!--  -->
+
+{% block title %} Plan | Pricing {% endblock title %}
+
+<!--  -->
+
+{% block body %}
+
+<div class="container">
+  <div class="py-5 mb-5">
+    <div class="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
+      <h1 class="display-4">Pricing</h1>
+      <p class="lead">This our plan list</p>
+    </div>
+
+    {% if plans %}
+
+    <div class="card-deck mb-3 text-center row">
+      {% for p in plan_monthly %}
+      <div class="card mb-4 box-shadow col-md-4">
+        <div class="card-header">
+          <h4 class="my-0 font-weight-normal">{{p.name}}</h4>
+        </div>
+        <div class="card-body">
+          <h1 class="card-title pricing-card-title">
+            ${{p.plan_cost}} <small class="text-muted">/ Month</small>
+          </h1>
+
+          {% if p.plan_feat_list %}
+          <ul class="list-unstyled mt-3 mb-4">
+            {% for pf in p.plan_feat_list %}
+            <li>{{pf}}</li>
+            {% endfor %}
+          </ul>
+          {% endif %}
+          <a
+            href="{% url 'general:plan-detail' pk=p.pk %}"
+            class="btn btn-lg btn-block btn-primary"
+          >
+            {{p.name}}
+          </a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="card-deck mb-3 text-center row">
+      {% for p in plan_yearly %}
+
+      <div class="card mb-4 box-shadow col-md-4">
+        <div class="card-header">
+          <h4 class="my-0 font-weight-normal">{{p.name}}</h4>
+        </div>
+        <div class="card-body">
+          <h1 class="card-title pricing-card-title">
+            ${{p.plan_cost}} <small class="text-muted">/ Year</small>
+          </h1>
+          {% if p.plan_feat_list %}
+          <ul class="list-unstyled mt-3 mb-4">
+            {% for pf in p.plan_feat_list %}
+            <li>{{pf}}</li>
+            {% endfor %}
+          </ul>
+          {% endif %}
+          <a
+            href="{% url 'general:plan-detail' pk=p.pk %}"
+            class="btn btn-lg btn-block btn-primary"
+          >
+            {{p.name}}
+          </a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <!--  -->
+    {% endif %}
+  </div>
+</div>
+
+<!--  -->
+
+{% endblock body %}
+<!--  -->
+
+<!--  -->

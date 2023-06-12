@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+<!--  -->
+
+{% block title %} Create Profile {% endblock title %}
+
+<!--  -->
+
+{% block body %}
+
+<div class="container mt-5">
+  <div class="profile-create bg-light pt-5">
+    <h1 class="text-center">Create Profile</h1>
+    <div class="profile-form-are">
+      <form
+        action=""
+        method="post"
+        class="d-flex flex-column align-items-center"
+      >
+        {% csrf_token %} {{form.as_p}}
+
+        <button type="submit" class="btn btn-primary mb-3 py-2 px-5 border-2">
+          Create
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock body %}
+<!--  -->

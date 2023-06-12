@@ -1,0 +1,63 @@
+{% extends 'admin/change_form.html' %}
+<!--  -->
+{% load static %}
+<!--  -->
+{% block extrahead %}
+<!--  -->
+{{ block.super }}
+<script src="{% static 'admin/js/add_more.js' %}"></script>
+<style>
+  #added_id_plan_features {
+    margin-left: 170px;
+  }
+
+  .clrBtn {
+    margin-left: 10px;
+    padding: 5px;
+    border-radius: 10%;
+    background-color: rgb(185, 93, 12);
+    color: rgb(249, 240, 240);
+    font-weight: bold;
+    padding-right: 30px;
+    padding-left: 30px;
+  }
+
+  .rm_btn {
+    margin-left: 10px;
+    padding: 5px;
+    border-radius: 10%;
+    background-color: rgb(243, 147, 64);
+    color: rgb(22, 8, 8);
+    font-weight: bold;
+  }
+  .addBtn {
+    margin-top: 10px;
+    padding: 5px;
+    border-radius: 10%;
+    background-color: rgb(4, 64, 37);
+    color: rgb(255, 255, 255);
+    font-weight: bold;
+    width: 163px;
+  }
+  .save-btn {
+    margin-top: 10px;
+    margin-left: 10px;
+    padding: 5px;
+    border-radius: 10%;
+    background-color: rgb(42, 167, 111);
+    color: rgb(255, 255, 255);
+    font-weight: bold;
+    width: 163px;
+  }
+</style>
+<!--  -->
+{% endblock extrahead %}
+<!--  -->
+
+{% block content %}
+<!--  -->
+
+{{ block.super }}
+
+<!--  -->
+{% endblock content %}

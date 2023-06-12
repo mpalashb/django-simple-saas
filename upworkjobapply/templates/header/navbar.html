@@ -1,0 +1,74 @@
+{% load static %}
+<!--  -->
+<nav class="navbar navbar-expand-lg navbar-light">
+  <div class="container">
+    <a class="navbar-brand logo" href="{% url 'gen:gen-index' %}"
+      >Cover<span>Leter</span>Generator</a
+    >
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarNav"
+      aria-controls="navbarNav"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'gen:gen-index' %}">Home</a>
+        </li>
+
+        {% if request.user.is_authenticated %}
+
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'users:profile-dash' %}"
+            >Profile Dashboard</a
+          >
+        </li>
+        <li class="nav-item">
+          <a
+            class="nav-link"
+            href="{% url 'users:check-cover' %}"
+            style="color: #69a788; font-weight: bold"
+            >Check Cover Leter</a
+          >
+        </li>
+        <li class="nav-item">
+          <a
+            class="nav-link"
+            href="{% url 'users:gen-cover' %}"
+            style="color: #878787; font-weight: 700"
+            >Generate Cover Leter</a
+          >
+        </li>
+        <li class="nav-item">
+          <a
+            class="nav-link"
+            href="{% url 'users:logout' %}"
+            style="color: #c85555; font-weight: 700"
+            >Logout</a
+          >
+        </li>
+
+        {% else %}
+
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'users:login' %}">Login</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'users:register' %}">SignUp</a>
+        </li>
+
+        {% endif %}
+
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'general:plan-list' %}">Pricing</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>

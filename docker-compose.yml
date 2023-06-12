@@ -1,0 +1,52 @@
+version: '3.8'
+services:
+  app:
+    build:
+      context: .
+    image: app:django_apply_image
+    container_name: django_apply_container
+    command: sh -c "sleep 10 && python manage.py runserver 0.0.0.0:8080"
+    # command: python manage.py runserver 0.0.0.0:8080
+    volumes:
+      - ./upworkjobapply:/up_apply
+    ports:
+      - "8000:8080"
+
+    depends_on:
+      - postgres_db
+
+  stripe_cli_service:
+    build: 
+      context: ./stripe_webhook
+    container_name: stripe_cli_container
+    image: stripe_cli_service:stripe_cli_tag
+    command: listen --forward-to http://app:8080/stripe-webhook
+    volumes:
+      - ./stripe_webhook/stripe_config:/root/.config/stripe
+
+    depends_on:
+      - app
+
+
+  postgres_db:
+    image: postgres
+    container_name: postgres_db_container
+    environment:
+      - POSTGRES_DB=mypgdb
+      - POSTGRES_USER=pguser
+      - POSTGRES_PASSWORD=pguserpassword
+
+    volumes:
+      - ./pg_data2/db:/var/lib/postgresql/data
+
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pg_admin_container
+    restart: always
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@palash.palash
+      - PGADMIN_DEFAULT_PASSWORD=TestPass1234
+
+    ports:
+      - "5050:80"

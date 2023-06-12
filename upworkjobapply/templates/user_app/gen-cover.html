@@ -1,0 +1,325 @@
+{% extends 'base.html' %}
+<!--  -->
+{% load static %}
+<!--  -->
+
+{% block title %} Generate Cover Leter {% endblock title %}
+<!--  -->
+
+{% block custom_style %}
+
+<style>
+  .cover-main {
+    background-color: #252323;
+    color: antiquewhite;
+  }
+</style>
+
+{% endblock custom_style %}
+<!--  -->
+{% block body %}
+
+<div class="container my-5">
+  {% if cover_leter %}
+
+  <div class="inside-container m-auto w-75 mt-4">
+    <hr />
+    <div class="alert alert-success text-center w-50 m-auto" role="alert">
+      Cover Leter Generated!
+    </div>
+    <div class="text-end">
+      <button
+        type="button"
+        class="btn btn-outline-primary text-end px-4 mb-1"
+        id="copy-btn"
+        onclick="copyTo()"
+      >
+        Copy
+      </button>
+    </div>
+    <div class="cover-main px-5 py-3 lead border-2 rounded-1" id="cover-main">
+      {{cover_leter}}
+    </div>
+  </div>
+
+  {% else %}
+  <div class="inside-container m-auto w-75 mt-4 d-none" id="gen-proposal">
+    <div id="resProposal" class="d-none">
+      <hr />
+      <div class="alert alert-success text-center w-50 m-auto" role="alert">
+        Cover Leter Generated!
+      </div>
+      <div class="text-end">
+        <button
+          type="button"
+          class="btn btn-outline-primary text-end px-4 mb-1"
+          id="copy-btn"
+        >
+          Copy
+        </button>
+      </div>
+    </div>
+    <div
+      class="cover-main px-5 py-3 lead border-2 rounded-1"
+      id="cover-main"
+    ></div>
+  </div>
+
+  {% endif %}
+
+  <!--  -->
+
+  <!--  -->
+
+  {% if credit_error %}
+  <div class="alert alert-warning text-center w-50 m-auto" role="alert">
+    {{credit_error}}
+  </div>
+  {% endif %}
+
+  <div class="bg-light text-info fw-bold text-center w-75 p-4 m-auto">
+    Require 5 credit to generate each proposal!
+    <a href="{% url 'users:proposal-history' %}" class="ms-3">History</a>
+  </div>
+
+  <div class="header-text d-flex justify-content-center">
+    <h1 class="text-center">Generate Upwork Cover Leter!</h1>
+
+    {% if request.user.profile %}
+    <!--  -->
+    {% if credit_left %}
+    <p class="mt-auto ms-4 fw-bold" style="color: #317e5f">
+      Credit Left: {{ credit_left }}
+    </p>
+
+    {% else %}
+
+    <p
+      class="mt-auto ms-4 fw-bold"
+      id="credit-left-main"
+      style="color: #317e5f"
+    >
+      Credit Left: {{ request.user.profile.credit }}
+    </p>
+
+    {% endif %}
+    <!--  -->
+
+    {% endif %}
+  </div>
+
+  {% if form.errors %}
+  <div class="alert alert-warning">{{ form.errors }}</div>
+  {% endif %}
+
+  <!--  -->
+  <!-- {% for err in form.errors %} {{err}} {% endfor %} -->
+
+  <div class="inside-container bg-light m-auto w-75">
+    <form method="post">
+      {% csrf_token %}
+      <!--  -->
+      <div class="mb-3">
+        <label for="jobTitle" class="form-label">Job Title</label>
+        <input
+          type="text"
+          class="form-control"
+          id="jobTitle"
+          name="title"
+          required
+        />
+      </div>
+      <div class="mb-3">
+        <label for="jobDescription" class="form-label">Job Description</label>
+        <textarea
+          class="form-control"
+          id="jobDescription"
+          rows="8"
+          name="desc"
+          required
+        ></textarea>
+      </div>
+      <div class="mb-3">
+        <label for="clientName" class="form-label"
+          >Client Name (optional)</label
+        >
+        <input type="text" class="form-control" id="clientName" name="client" />
+      </div>
+      <div class="mb-3">
+        <label for="clientName" class="form-label"
+          >Generate Type (optional)</label
+        >
+        <select
+          class="form-select"
+          aria-label="Option Select"
+          name="type_option"
+        >
+          <option selected value="normal">Normal (Default)</option>
+          <option value="short">Short</option>
+          <option value="very_short">Very Short</option>
+        </select>
+      </div>
+      <!-- <button type="submit" class="btn btn-primary">Generate</button> -->
+      <button type="submit" class="btn btn-primary" id="generate_async">
+        Generate
+      </button>
+    </form>
+  </div>
+</div>
+
+{% endblock body %}
+<!--  -->
+
+{% block custom_script %}
+<script>
+  var copy_btn = document.getElementById("copy-btn");
+
+  const copyTo = () => {
+    console.log("clicked on copy");
+    console.log(document.getElementById("cover-main").innerText);
+    navigator.clipboard
+      .writeText(document.getElementById("cover-main").innerText)
+      // .writeText(document.getElementById("cover-main").innerText)
+      .then(() => {
+        // alert("Copied to clipboard!");
+        copy_btn.innerText = "Copied!";
+        copy_btn.style.backgroundColor = "black";
+        copy_btn.style.color = "white";
+      })
+      .catch((err) => console.log(err));
+  };
+
+  document.addEventListener("DOMContentLoaded", () => {
+    copy_btn.addEventListener("click", copyTo);
+  });
+
+  //
+  //
+  //
+  //
+  const gen_async_btn = document.getElementById("generate_async");
+  const res_proposal = document.getElementById("gen-proposal");
+
+  const getCookie = (name) => {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== "") {
+      const cookies = document.cookie.split(";");
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        // Does this cookie string begin with the name we want?
+        if (cookie.substring(0, name.length + 1) === name + "=") {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  };
+
+  const check_ = () => {
+    gen_async_btn.innerText = "";
+    gen_async_btn.disabled = true;
+
+    const spinner_gen_async_btn = document.createElement("span");
+    spinner_gen_async_btn.setAttribute("role", "status");
+    spinner_gen_async_btn.setAttribute("aria-hidden", "true");
+    spinner_gen_async_btn.classList.add("spinner-border", "spinner-border-sm");
+
+    gen_async_btn.appendChild(spinner_gen_async_btn);
+    gen_async_btn.appendChild(document.createTextNode(" Loading..."));
+
+    const csrf_token = getCookie("csrftoken");
+
+    let title = document.querySelector('input[name="title"]');
+    let desc = document.querySelector('textarea[name="desc"]');
+    let client_n = document.querySelector('input[name="client"]');
+    let type_pro = document.querySelector('select[name="type_option"]');
+
+    // if (title.value === null) {
+    //   document
+    //     .getElementsByClassName("js-custom-alert")
+    //     .classList.remove("d-done");
+    //   document.getElementsByClassName("js-custom-alert").innerHTML =
+    //     "Title is required!";
+    // }
+
+    let body_data = {
+      title: title.value,
+      desc: desc.value,
+      type_pro: type_pro.value,
+    };
+    if (client_n.value) {
+      body_data = { ...body_data, client_n: client_n.value };
+    }
+
+    fetch("/api/v2/gen-proposal", {
+      method: "POST",
+      credentials: "same-origin",
+      headers: {
+        "X-CSRFToken": csrf_token,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body_data),
+    })
+      .then((load) => {
+        return { data: load.json(), status: load.status };
+      })
+      .then((res) => {
+        if (res.status === 200) {
+          res.data.then((res_) => {
+            res_proposal.classList.remove("d-none");
+            document.getElementById("cover-main").innerHTML = res_.res;
+            document.getElementById("resProposal").classList.remove("d-none");
+            document.getElementById("credit-left-main").innerHTML = res_.credit;
+            if (res_.status_msg) {
+              console.log(res_.status_msg);
+              const status_notify =
+                res_proposal.querySelector("#resProposal").firstElementChild
+                  .nextElementSibling;
+              status_notify.innerHTML = res_.status_msg;
+              status_notify.classList.remove("alert-success");
+              status_notify.classList.add("alert-warning");
+            }
+            gen_async_btn.innerText = "Gennerate";
+            gen_async_btn.disabled = false;
+          });
+        } else {
+          if (res.status === 400) {
+            res_proposal.classList.remove("d-none");
+            // const status_notify_again =
+            //   res_proposal.querySelector("#resProposal").firstElementChild
+            //     .nextElementSibling;
+            // status_notify_again.innerHTML = `${res.status} ValidationError!`;
+            // status_notify_again.classList.remove("alert-success");
+            // status_notify_again.classList.add("alert-warning");
+
+            document.getElementById(
+              "cover-main"
+            ).innerHTML = `${res.status} ValidationError!`;
+            gen_async_btn.innerText = "Gennerate";
+            gen_async_btn.disabled = false;
+          }
+        }
+      })
+      .catch((err) => console.log(err));
+  };
+
+  gen_async_btn.addEventListener("click", (e) => {
+    e.preventDefault();
+    check_();
+  });
+
+  // const check_ = async () => {
+  //   try {
+  //     const res = await fetch("/api/v2/gen-proposal", {
+  //       method: "GET",
+  //     });
+  //     console.log(await res.json());
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
+</script>
+{% endblock custom_script %}
+
+<!--  -->

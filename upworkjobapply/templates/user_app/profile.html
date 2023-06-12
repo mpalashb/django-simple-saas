@@ -1,0 +1,186 @@
+{% extends 'base.html' %}
+<!--  -->
+
+{% block title %} Dashboard | Profile {% endblock title %} {% block body %}
+
+<div class="row justify-content-center mt-5">
+  <div class="col-md-6">
+    {% if not has_profile %}
+    <div class="no-profile text-center">
+      <div class="card-header bg-warning text-dark m-auto col-6">
+        <h4 class="card-title">You have no profile!</h4>
+      </div>
+      <a href="{% url 'users:profile-create' %}" class="btn btn-primary my-3"
+        >Create Profile</a
+      >
+    </div>
+    {% else %}
+
+    <div class="card">
+      <div class="card-header bg-primary text-white">
+        <h4 class="card-title text-center">User Profile</h4>
+      </div>
+
+      <div class="card-body">
+        <div class="row mb-3">
+          <div class="col-6">
+            <div class="f-name d-flex align-content-between">
+              <h6 class="text-muted me-2">First Name</h6>
+              <p class="fw-bold">{{profile.first_name}}</p>
+            </div>
+            <div class="l-name d-flex align-content-between">
+              <h6 class="text-mute me-2">Last Name</h6>
+              <p class="fw-bold">{{profile.last_name}}</p>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="p-company d-flex align-content-between">
+              <h6 class="text-muted me-2">Company</h6>
+              <p class="fw-bold">{{profile.company}}</p>
+            </div>
+            <div class="p-email d-flex align-content-between">
+              <h6 class="text-mute me-2">Email</h6>
+              <p class="fw-bold">{{profile.email}}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-6 d-flex align-content-between">
+            <h6 class="text-muted me-2">User</h6>
+            <p class="fw-bold">{{profile.user.username}}</p>
+          </div>
+          <div class="col-6 d-flex align-content-between">
+            <h6 class="text-muted me-2">Credit Left</h6>
+            <p class="fw-bold">{{profile.credit}}</p>
+          </div>
+        </div>
+        <hr />
+        <form
+          action="{% url 'users:profile-delete' %}"
+          method="post"
+          class="d-flex justify-content-center"
+        >
+          {% csrf_token %}
+          <button class="btn btn-danger" type="submit">Delete Profile</button>
+        </form>
+        <hr />
+
+        {% if profile.active_sub %}
+        <!--  -->
+        {% if not profile.active_sub.active %}
+        <div class="card-header bg-warning text-dark m-auto col-6">
+          <h4 class="text-center fs-5">
+            Subscription Inactivate! <br />
+            Please contact customer support!
+          </h4>
+        </div>
+        {% else %}
+
+        <div class="row mb-3">
+          {% if status == 'canceled' %}
+          <div class="alert alert-warning text-center" role="alert">
+            Summary About Last Subscription
+          </div>
+          <hr />
+          {% endif %}
+
+          <div class="col-6 d-flex align-content-between">
+            <h6 class="text-muted me-2">Subscription</h6>
+            <p class="fw-bold">{{profile.active_sub.plan.name}}</p>
+          </div>
+          <div class="col-6 d-flex align-content-between">
+            <h6 class="text-muted me-2">Costs</h6>
+            <p class="fw-bold">${{profile.active_sub.plan.plan_cost}}</p>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-6 d-flex align-content-between">
+            <h6 class="text-muted me-2">Subscription Start</h6>
+            <p class="fw-bold">{{profile.active_sub.start}}</p>
+          </div>
+          <div class="col-6 d-flex align-content-between">
+            <h6 class="text-muted me-2">Subscription End</h6>
+            <p class="fw-bold">{{profile.active_sub.end}}</p>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-6 d-flex align-content-between">
+            <h6 class="text-muted me-2">Subscription Status</h6>
+            <p class="fw-bold">{{status}}</p>
+          </div>
+          {% if status == 'canceled' %}
+          <div class="col-6 d-flex align-content-between">
+            <h6 class="text-muted me-2">Date Canceled</h6>
+            <p class="fw-bold">{{canceled_date}}</p>
+          </div>
+          {% endif %}
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-6 d-flex align-content-between">
+            <h6 class="text-muted me-2">Subscription Type</h6>
+            <p class="fw-bold">{{profile.active_sub.plan.plan_type}}</p>
+          </div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-6 d-flex align-content-between">
+            <h6 class="text-muted me-2">Interval</h6>
+            <p class="fw-bold">{{plan_interval}}</p>
+          </div>
+        </div>
+
+        {% if status == 'canceled' %}
+
+        <div>
+          <h3 class="bg-warning text-center p-2 text-white">
+            No Active Subscription Or Cancelled!
+          </h3>
+        </div>
+
+        {% else %}
+        <hr />
+        <form
+          action="{% url 'general:cancel-sub' %}"
+          method="post"
+          class="d-flex justify-content-center"
+        >
+          {% csrf_token %}
+          <button
+            class="btn"
+            type="submit"
+            style="
+              color: #fff;
+              background-color: #a51220;
+              border-color: #dc3545;
+            "
+          >
+            Cancel subscription
+          </button>
+        </form>
+
+        {% endif %}
+        <!--  -->
+
+        {% endif %}
+        <!--  -->
+
+        {% else %}
+        <div class="card-header bg-danger text-white col-6 m-auto">
+          <h4 class="card-title text-center">
+            You have no active subscription!
+          </h4>
+        </div>
+
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  {% endif %}
+  <!--  -->
+  {% endblock body %}
+  <!--  -->
+</div>
