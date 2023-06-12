@@ -49,5 +49,11 @@ Admin can access admin panel to create, edit, or delete a pricing plan. They can
 ![Screenshot](screenshots/15-django-saas-gen-proposal-page.png)
 ![Screenshot](screenshots/16-django-saas-generated-proposal.png)
 ![Screenshot](screenshots/17-django-saas-gen-proposal-history.png)
+
+#### When a user cancel then subscription
+
 ![Screenshot](screenshots/18-django-saas-profile-dash-subscription-cancel.png)
+
+#### Check the status from Stripe dashboard
+
 ![Screenshot](screenshots/19-django-saas-stripe-dash-subscription-canceled.png)
